@@ -23,8 +23,8 @@ export const useMount = (callback: () => void) => {
   }, []);
 };
 
-// 防抖
-export const useDebounce = (value: any, delay?: number) => {
+// 防抖(使用范型)
+export const useDebounce = <V>(value: V, delay?: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
