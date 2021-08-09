@@ -1,5 +1,4 @@
 /* @jsxImportSource @emotion/react */
-import { jsx } from "@emotion/react";
 import { Input, Select } from "antd";
 import { Form } from "antd";
 
