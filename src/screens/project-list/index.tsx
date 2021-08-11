@@ -1,39 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SearchPanel } from "./search-panel";
 import { List } from "./list";
-import { cleanObject, useMount, useDebounce } from "utils";
-import { useHttp } from "utils/http";
+import { useDebounce } from "utils";
 import styled from "@emotion/styled";
+import { Typography } from "antd";
+import { useProjects } from "utils/project";
+import { useUsers } from "utils/user";
 
 export const ProjectListScreen = () => {
   const [param, setParam] = useState({
     name: "",
     personId: "",
   });
-  const [list, setList] = useState([]);
-  const [users, setUsers] = useState([]);
+
   const debouncedParam = useDebounce(param, 200);
-  const client = useHttp();
-
-  useEffect(() => {
-    client("projects", { data: cleanObject(debouncedParam) }).then(setList);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedParam]);
-
-  useMount(() => {
-    client("users", { data: cleanObject(debouncedParam) }).then(setUsers);
-  });
+  const { isLoading, error, data: list } = useProjects(debouncedParam);
+  const { data: users } = useUsers();
 
   return (
     <Container>
       <div>
         <h1>项目列表</h1>
         <SearchPanel
-          users={users}
+          users={users || []}
           param={param}
           setParam={setParam}
         ></SearchPanel>
-        <List users={users} list={list}></List>
+        {error ? (
+          <Typography.Text type="danger">{error.message}</Typography.Text>
+        ) : null}
+        {/* antd 中的 Table 组件本身就有一个loading参数 */}
+        <List
+          loading={isLoading}
+          users={users || []}
+          dataSource={list || []}
+        ></List>
       </div>
     </Container>
   );
