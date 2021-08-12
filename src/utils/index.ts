@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 export const isFalsy = (value: any) => (value === 0 ? false : !value);
 export const isVoid = (value: unknown) =>
   value === undefined || value === null || value === "";
@@ -53,4 +53,24 @@ export const useArray = <T>(initialArray: T[]) => {
       setValue(copy);
     },
   };
+};
+
+export const useDocumentTitle = (title: string, keepOnUnmount = true) => {
+  // 页面加载时：oldTitle = 旧title ‘Jira任务管理系统’
+  // 加载后：oldTitle = 新title
+  const oldTitle = useRef(document.title).current; // useRef 返回的ref对象在组件的整个生命周期内保持不变
+
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  // 在页面卸载时被调用
+  useEffect(() => {
+    return () => {
+      if (!keepOnUnmount) {
+        // 如果不指定依赖，读到的就是旧title
+        document.title = oldTitle;
+      }
+    };
+  }, [keepOnUnmount, oldTitle]);
 };
