@@ -26,3 +26,6 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
     },
   ] as const;
 };
+
+// 什么场景需要加as const？
+// 返回tuple类型，里面的子类型不一样的时候要使用as const
