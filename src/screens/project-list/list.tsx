@@ -1,8 +1,10 @@
 import { Table, TableProps } from "antd";
+import { Pin } from "components/pin";
 import dayjs from "dayjs";
 // react-router 和 react-router-dom的关系，类似于 react 和 react-dom/react-native/react-vr...
 import { Link } from "react-router-dom";
 import { User } from "screens/project-list/search-panel";
+import { useEditProject } from "utils/project";
 export interface Project {
   id: number;
   name: string;
@@ -13,13 +15,28 @@ export interface Project {
 }
 interface ListProps extends TableProps<Project> {
   users: User[];
+  refresh?: () => void;
 }
 export const List = ({ users, ...props }: ListProps) => {
+  const { mutate } = useEditProject();
+  const pinProject = (id: number) => (pin: boolean) =>
+    mutate({ id, pin }).then(props.refresh); // 函数柯里化
   return (
     <Table
       rowKey={"id"}
       pagination={false}
       columns={[
+        {
+          title: <Pin checked={true} disabled={true} />,
+          render(value, project) {
+            return (
+              <Pin
+                checked={project.pin}
+                onCheckedChange={pinProject(project.id)}
+              />
+            );
+          },
+        },
         {
           title: "名称",
           // dataIndex: "name",
